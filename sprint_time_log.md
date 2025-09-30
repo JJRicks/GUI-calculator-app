@@ -30,7 +30,7 @@ The expected minimum amount of time each Sprint for each category is as follows:
 |24 Sep    | 14:00    |   TP   |  Team planning                             | 60          |
 |26 Sep    | 16:00    |   IM   |  Setting the environment                   | 120         |
 |29 Sep    | 14:00    |   TP   |  Helping team get environment set          | 60          |
-|          |          |        |                                            |             |
+|30 Sep    | 16:00    |   IM   |  Getting the app set up                    |             |
 |          |          |        |                                            |             |
 
 _Note: Add more rows as needed._
