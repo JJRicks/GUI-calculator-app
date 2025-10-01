@@ -13,6 +13,9 @@ type KeyProps = {
   flex?: number; // optional, how wide the key should be relative to its siblings
 };
 
+const DIGITS = new Set(["0","1","2","3","4","5","6","7","8","9"]);
+const OPERATORS = new Set(["+","-","×","÷"]);
+
 function Key(props: KeyProps) {
   const label = props.label;
   // if a flex number is passed in, use that. Otherwise define it as 1.
@@ -29,11 +32,21 @@ function Key(props: KeyProps) {
   function getKeyStyle(state: PressableStateCallbackType): StyleProp<ViewStyle>{
     // start with the base style
     // this is a view style array, otherwise typescript gets confused 
-    const styleList: StyleProp<ViewStyle>[] = [styles.key];
+    
+    let base: StyleProp<ViewStyle>;
+    if (DIGITS.has(label) || label === ".") {
+      base = styles.key;
+    } else if (OPERATORS.has(label)) {
+      base = styles.functionKey;
+    } else if (label === "=") {
+      base = styles.equalsKey;
+    } else {
+      base = styles.key;
+    }
 
-    // add the layout bits 
-    styleList.push(styles.keyBox);
-    styleList.push({ flex: flexValue });
+    const styleList: StyleProp<ViewStyle>[] = [
+      base, styles.keyBox, {flex: flexValue},
+    ];
     
     // if key pressed change the style
     if (state.pressed === true) {
@@ -59,7 +72,28 @@ export default function Index() {
         <Key label="7" />
         <Key label="8" />
         <Key label="9" />
-        <Key label="x" />
+        <Key label="÷" />
+      </View>
+      <View style = {styles.row}>
+        <Key label="4" />
+        <Key label="5" />
+        <Key label="6" />
+        <Key label="×" />
+      </View>
+      <View style = {styles.row}>
+        <Key label="1" />
+        <Key label="2" />
+        <Key label="3" />
+        <Key label="-" />
+      </View>
+      <View style={styles.row}>
+        <Key label="0" flex={3} /> 
+        <Key label="." />
+        <Key label="+" />
+      </View>
+      <View style={styles.row}>
+        <Key label="AC" flex={1} /> 
+        <Key label="=" />
       </View>
     </View>
   );
@@ -72,11 +106,13 @@ const styles = StyleSheet.create<{
   keyBox: ViewStyle;
   keyPressed: ViewStyle;
   keyText: TextStyle;
+  functionKey: ViewStyle;
+  equalsKey: ViewStyle;
 }>({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
     backgroundColor: "#0b0b0b",
   },
   row: {
@@ -86,6 +122,18 @@ const styles = StyleSheet.create<{
   },
   key: { // our default key color
     backgroundColor: "#3c3b3bff",
+    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+  },
+  functionKey: {
+    backgroundColor: "#2066c3ff",
+    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+  },
+  equalsKey: {
+    backgroundColor: "#81b8ffff",
     borderRadius: 12,
     paddingVertical: 18,
     paddingHorizontal: 24,
