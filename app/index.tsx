@@ -112,7 +112,6 @@ export default function Index() {
         setDisplay(label);
         setWaitingForSecond(false);
       } else {
-        setDisplay(label);
         setDisplay(display + label); // append to the current number
       }
       return;
@@ -139,6 +138,7 @@ export default function Index() {
       if (display === "Error") return; // idk just don't do anything
 
       const value = parseFloat(display);
+      
 
       // if you push an operator, get the current value of the display, save it as a float
       if(firstOperand === null) {
@@ -147,12 +147,13 @@ export default function Index() {
         // an operator again, then evaluate the first calculation
       } else if (!waitingForSecond && operator !== null) {
         const result = evaluate(firstOperand, value, operator);
-        setDisplay(format(result));
+        setDisplay(format(result))
         // if the calculation errors return null, otherwise just use the result
         setFirstOperand(isNaN(result) ? null : result);
       }
-      setOperator(label);
+      setOperator(label); 
       setWaitingForSecond(true);
+  
       return;
     }
 
