@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import type {
+  ImageStyle,
   PressableStateCallbackType,
   StyleProp,
   TextStyle,
   ViewStyle,
 } from "react-native";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 const DIGITS = new Set(["0","1","2","3","4","5","6","7","8","9"]);
 const OPERATORS = new Set(["+","-","×","÷"]);
@@ -175,40 +176,45 @@ export default function Index() {
 
   return (
     <View style = {styles.container}>
-      <View style={styles.display}>
-        <Text style = {styles.displayText} numberOfLines = {1} adjustsFontSizeToFit>
-          {display}
-        </Text>
+      <Image source={require("@/assets/images/joelscalculator.jpg")} style={styles.hero} resizeMode="cover" />
+      <View style={styles.bottom}>
+        <View style={styles.display}>
+          <Text style = {styles.displayText} numberOfLines = {1} adjustsFontSizeToFit>
+            {display}
+          </Text>
+        </View>
+        <View style = {styles.pad}>
+          <View style = {styles.row}>
+            <Key label="7" onPress={handleKeyPress}/>
+            <Key label="8" onPress={handleKeyPress}/>
+            <Key label="9" onPress={handleKeyPress}/>
+            <Key label="÷" onPress={handleKeyPress}/>
+          </View>
+          <View style = {styles.row}>
+            <Key label="4" onPress={handleKeyPress}/>
+            <Key label="5" onPress={handleKeyPress}/>
+            <Key label="6" onPress={handleKeyPress}/>
+            <Key label="×" onPress={handleKeyPress}/>
+          </View>
+          <View style = {styles.row}>
+            <Key label="1" onPress={handleKeyPress}/>
+            <Key label="2" onPress={handleKeyPress}/>
+            <Key label="3" onPress={handleKeyPress}/>
+            <Key label="-" onPress={handleKeyPress}/>
+          </View>
+          <View style={styles.row}>
+            <Key label="0" flex={3.1} onPress={handleKeyPress}/> 
+            <Key label="." onPress={handleKeyPress}/>
+            <Key label="+" onPress={handleKeyPress}/>
+          </View>
+          <View style={styles.row}>
+            <Key label="AC" flex={1} onPress={handleKeyPress}/> 
+            <Key label="=" onPress={handleKeyPress}/>
+          </View>
+        </View>
       </View>
-      <View style = {styles.pad}>
-        <View style = {styles.row}>
-          <Key label="7" onPress={handleKeyPress}/>
-          <Key label="8" onPress={handleKeyPress}/>
-          <Key label="9" onPress={handleKeyPress}/>
-          <Key label="÷" onPress={handleKeyPress}/>
-        </View>
-        <View style = {styles.row}>
-          <Key label="4" onPress={handleKeyPress}/>
-          <Key label="5" onPress={handleKeyPress}/>
-          <Key label="6" onPress={handleKeyPress}/>
-          <Key label="×" onPress={handleKeyPress}/>
-        </View>
-        <View style = {styles.row}>
-          <Key label="1" onPress={handleKeyPress}/>
-          <Key label="2" onPress={handleKeyPress}/>
-          <Key label="3" onPress={handleKeyPress}/>
-          <Key label="-" onPress={handleKeyPress}/>
-        </View>
-        <View style={styles.row}>
-          <Key label="0" flex={3.1} onPress={handleKeyPress}/> 
-          <Key label="." onPress={handleKeyPress}/>
-          <Key label="+" onPress={handleKeyPress}/>
-        </View>
-        <View style={styles.row}>
-          <Key label="AC" flex={1} onPress={handleKeyPress}/> 
-          <Key label="=" onPress={handleKeyPress}/>
-        </View>
-      </View>
+      
+      
     </View>
   );
 }
@@ -225,6 +231,8 @@ const styles = StyleSheet.create<{
   keyText: TextStyle;
   functionKey: ViewStyle;
   equalsKey: ViewStyle;
+  hero: ImageStyle;
+  bottom: ViewStyle;
 }>({
   display: {
     minHeight: 96,
@@ -242,7 +250,7 @@ const styles = StyleSheet.create<{
   },
   container: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "stretch",
     backgroundColor: "#0b0b0b",
     paddingHorizontal: 12,
@@ -283,5 +291,15 @@ const styles = StyleSheet.create<{
     color: "white",
     fontSize: 24,
     fontWeight: "600",
+  },
+  hero: {
+    width: "100%",
+    height:250,
+    borderRadius: 16,
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  bottom: {
+    // just a wrapper
   },
 });
