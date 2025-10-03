@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type {
   PressableStateCallbackType,
   StyleProp,
@@ -7,14 +7,15 @@ import type {
 } from "react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+const DIGITS = new Set(["0","1","2","3","4","5","6","7","8","9"]);
+const OPERATORS = new Set(["+","-","×","÷"]);
+
 // Reusable button key component 
 type KeyProps = {
+  onPress?: (label: string) => void;
   label: string; // this is what to show on the button/key
   flex?: number; // optional, how wide the key should be relative to its siblings
 };
-
-const DIGITS = new Set(["0","1","2","3","4","5","6","7","8","9"]);
-const OPERATORS = new Set(["+","-","×","÷"]);
 
 function Key(props: KeyProps) {
   const label = props.label;
@@ -22,7 +23,9 @@ function Key(props: KeyProps) {
   const flexValue = typeof props.flex === "number" ? props.flex : 1;
 
   function handlePress() {
-    // what we do when a key is pressed
+    if (typeof props.onPress === "function") {
+      props.onPress(label);
+    }
   }
   // use Android ripple effect for fun 
   const rippleConfig = { color: "#ffffff22" }; // color prop object 
@@ -44,9 +47,7 @@ function Key(props: KeyProps) {
       base = styles.key;
     }
 
-    const styleList: StyleProp<ViewStyle>[] = [
-      base, styles.keyBox, {flex: flexValue},
-    ];
+    const styleList: StyleProp<ViewStyle>[] = [base, styles.keyBox, {flex: flexValue},];
     
     // if key pressed change the style
     if (state.pressed === true) {
@@ -66,41 +67,145 @@ function Key(props: KeyProps) {
 }
 
 export default function Index() {
+  const [display, setDisplay] = useState<string>("0");
+  const [firstOperand, setFirstOperand] = useState<number | null>(null);
+  const [operator, setOperator] = useState<string | null>(null);
+  const [waitingForSecond, setWaitingForSecond] = useState<boolean>(false);
+
+  function evaluate(a: number, b: number, op: string): number{
+    if (op === "+") return a + b;
+    if (op === "-") return a - b;
+    if (op === "×") return a * b;
+    // if we're dividing by zero return NaN otherwise a/b
+    if (op === "÷") return b === 0 ? NaN : a / b;
+    return b;
+  }
+
+  function format(n: number): string {
+    // quick sanity check 
+    if (!isFinite(n) || isNaN(n)) return "Error";
+    // floating point gets messy. this is doing some shenanigans to fix it
+    const rounded = Math.round((n + Number.EPSILON) * 1e10) / 1e10;
+    const s = String(rounded);
+    // if the number is more than 12 digits display as scientific notation
+    return s.length > 12 ? rounded.toExponential(6) : s;
+  }
+  
+  // this is the big daddy, it gets the label from the button and handles everything from there 
+  function handleKeyPress(label : string){
+    // if the user presses AC, clear everything out and reset
+    if (label === "AC") {
+      setDisplay("0");
+      setFirstOperand(null);
+      setOperator(null);
+      setWaitingForSecond(false);
+      return;
+    }
+    // if you push a number key
+    if (DIGITS.has(label)) {
+      // if you just pushed a button and the display currently says error, reset everything and put that number
+      if (display === "Error") {
+        setDisplay(label); setFirstOperand(null); setOperator(null); setWaitingForSecond(false);
+        return;
+      }
+      if (waitingForSecond || display === "0") {
+        setDisplay(label);
+        setWaitingForSecond(false);
+      } else {
+        setDisplay(label);
+        setDisplay(display + label); // append to the current number
+      }
+      return;
+    }
+
+    // Decimal point
+    if (label === ".") {
+      if (display === "Error") {
+      setDisplay("0."); setFirstOperand(null); setOperator(null); setWaitingForSecond(false);
+      return;
+    }
+    if (waitingForSecond) {
+      setDisplay("0."); setWaitingForSecond(false);
+      return;
+    }
+    // check if the user already pressed the decimal point, then only add one if not
+    if(!display.includes(".")) {
+      setDisplay(display + ".");
+    }
+    return;
+    }
+
+    if (OPERATORS.has(label)) { 
+      if (display === "Error") return; // idk just don't do anything
+
+      const value = parseFloat(display);
+
+      // if you push an operator, get the current value of the display, save it as a float
+      if(firstOperand === null) {
+        setFirstOperand(value);
+        // if there's already a calculation pending with a second operand and you push 
+        // an operator again, then evaluate the first calculation
+      } else if (!waitingForSecond && operator !== null) {
+        const result = evaluate(firstOperand, value, operator);
+        setDisplay(format(result));
+        // if the calculation errors return null, otherwise just use the result
+        setFirstOperand(isNaN(result) ? null : result);
+      }
+      setOperator(label);
+      setWaitingForSecond(true);
+      return;
+    }
+
+    if (label === "=") { 
+      if (display === "Error") return;
+      // check all the conditions to see if we're ready to calculate
+      if (operator !== null && firstOperand !== null && !waitingForSecond) {
+        const second = parseFloat(display);
+        const result = evaluate(firstOperand, second, operator);
+        setDisplay(format(result));
+        // if the calculation didn't error, set the new result to the first operand
+        setFirstOperand(isNaN(result) ? null : result);
+        setOperator(null);
+        setWaitingForSecond(true);
+      }
+      return;
+    }
+  }
+
   return (
-    
     <View style = {styles.container}>
       <View style={styles.display}>
         <Text style = {styles.displayText} numberOfLines = {1} adjustsFontSizeToFit>
-          0
+          {display}
         </Text>
       </View>
       <View style = {styles.pad}>
         <View style = {styles.row}>
-          <Key label="7" />
-          <Key label="8" />
-          <Key label="9" />
-          <Key label="÷" />
+          <Key label="7" onPress={handleKeyPress}/>
+          <Key label="8" onPress={handleKeyPress}/>
+          <Key label="9" onPress={handleKeyPress}/>
+          <Key label="÷" onPress={handleKeyPress}/>
         </View>
         <View style = {styles.row}>
-          <Key label="4" />
-          <Key label="5" />
-          <Key label="6" />
-          <Key label="×" />
+          <Key label="4" onPress={handleKeyPress}/>
+          <Key label="5" onPress={handleKeyPress}/>
+          <Key label="6" onPress={handleKeyPress}/>
+          <Key label="×" onPress={handleKeyPress}/>
         </View>
         <View style = {styles.row}>
-          <Key label="1" />
-          <Key label="2" />
-          <Key label="3" />
-          <Key label="-" />
+          <Key label="1" onPress={handleKeyPress}/>
+          <Key label="2" onPress={handleKeyPress}/>
+          <Key label="3" onPress={handleKeyPress}/>
+          <Key label="-" onPress={handleKeyPress}/>
         </View>
         <View style={styles.row}>
-          <Key label="0" flex={3} /> 
-          <Key label="." />
-          <Key label="+" />
+          <Key label="0" flex={3.1} onPress={handleKeyPress}/> 
+          <Key label="." onPress={handleKeyPress}/>
+          <Key label="+" onPress={handleKeyPress}/>
         </View>
         <View style={styles.row}>
-          <Key label="AC" flex={1} /> 
-          <Key label="=" />
+          <Key label="AC" flex={1} onPress={handleKeyPress}/> 
+          <Key label="=" onPress={handleKeyPress}/>
         </View>
       </View>
     </View>
