@@ -4,7 +4,7 @@
     "slug": "basic-gui-calculator",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/calcicon.png",
     "scheme": "basicguicalculator",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
