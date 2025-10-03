@@ -67,33 +67,41 @@ function Key(props: KeyProps) {
 
 export default function Index() {
   return (
+    
     <View style = {styles.container}>
-      <View style = {styles.row}>
-        <Key label="7" />
-        <Key label="8" />
-        <Key label="9" />
-        <Key label="÷" />
+      <View style={styles.display}>
+        <Text style = {styles.displayText} numberOfLines = {1} adjustsFontSizeToFit>
+          0
+        </Text>
       </View>
-      <View style = {styles.row}>
-        <Key label="4" />
-        <Key label="5" />
-        <Key label="6" />
-        <Key label="×" />
-      </View>
-      <View style = {styles.row}>
-        <Key label="1" />
-        <Key label="2" />
-        <Key label="3" />
-        <Key label="-" />
-      </View>
-      <View style={styles.row}>
-        <Key label="0" flex={3} /> 
-        <Key label="." />
-        <Key label="+" />
-      </View>
-      <View style={styles.row}>
-        <Key label="AC" flex={1} /> 
-        <Key label="=" />
+      <View style = {styles.pad}>
+        <View style = {styles.row}>
+          <Key label="7" />
+          <Key label="8" />
+          <Key label="9" />
+          <Key label="÷" />
+        </View>
+        <View style = {styles.row}>
+          <Key label="4" />
+          <Key label="5" />
+          <Key label="6" />
+          <Key label="×" />
+        </View>
+        <View style = {styles.row}>
+          <Key label="1" />
+          <Key label="2" />
+          <Key label="3" />
+          <Key label="-" />
+        </View>
+        <View style={styles.row}>
+          <Key label="0" flex={3} /> 
+          <Key label="." />
+          <Key label="+" />
+        </View>
+        <View style={styles.row}>
+          <Key label="AC" flex={1} /> 
+          <Key label="=" />
+        </View>
       </View>
     </View>
   );
@@ -101,6 +109,9 @@ export default function Index() {
 // create a stylesheet called styles, to reference what things will look like
 const styles = StyleSheet.create<{
   container: ViewStyle;
+  display: ViewStyle;
+  pad: ViewStyle;
+  displayText: TextStyle;
   row: ViewStyle;
   key: ViewStyle;
   keyBox: ViewStyle;
@@ -109,11 +120,27 @@ const styles = StyleSheet.create<{
   functionKey: ViewStyle;
   equalsKey: ViewStyle;
 }>({
+  display: {
+    minHeight: 96,
+    padding: 16,
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+  },
+  displayText: {
+    color: "white",
+    fontSize: 56,
+    fontWeight: "200",
+  },
+  pad: {
+    width: "100%",
+  },
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "stretch",
     backgroundColor: "#0b0b0b",
+    paddingHorizontal: 12,
+    paddingBottom: 70,
   },
   row: {
     flexDirection: "row", // lay children left to right
