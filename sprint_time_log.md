@@ -40,7 +40,7 @@ _Note: Add more rows as needed._
 
 |Categroy                       |Total Time (Hours:Minutes)|
 |-------------------------------|:------------------------:|
-|IM - Individual Module         |                          |
-|TP - Team Project              |                          |
-|MTG - Class Meetings           |                          |
+|IM - Individual Module         |  14.5 hours              |
+|TP - Team Project              |  2.5 hours               |
+|MTG - Class Meetings           |  4 hours                 |
 |**TOTAL**                      |                          |
